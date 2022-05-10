@@ -144,7 +144,7 @@ hr {
 .text-indent{
     margin-left: 20px;
 }
-.button{
+.button_small{
     background-color:black;
     color:white;
     border-radius:50px;
@@ -160,7 +160,7 @@ hr {
     justify-content: center;
     color: #555555;
 }
-.play {
+#play {
     cursor: pointer;
     color:#111111;
     background-color: #555555;
@@ -169,6 +169,10 @@ hr {
     width: 35px;
     font-size: 20px;
     border: 0;
+}
+#previous, #next {
+    color:#111111;
+    background-color: #555555;
 }
 .panelmusik_elem {
     margin-left: 20px;

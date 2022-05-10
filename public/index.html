@@ -5,40 +5,24 @@
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="./styles.css" />
+    
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
       content="Web site created using create-react-app"
     />
-    <!--
-      Notice the use of %PUBLIC_URL% in the tags above.
-      It will be replaced with the URL of the `public` folder during the build.
-      Only files inside the `public` folder can be referenced from the HTML.
-
-      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
-      work correctly both with client-side routing and a non-root public URL.
-      Learn how to configure a non-root public URL by running `npm run build`.
-    -->
     <title>React App</title>
   </head>
   <body class="start">
+    <script> src="./src/index.js"</script>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
-    <!--
-      This HTML file is a template.
-      If you open it directly in the browser, you will see an empty page.
-
-      You can add webfonts, meta tags, or analytics to this file.
-      The build step will place the bundled scripts into the <body> tag.
-
-      To begin the development, run `npm start` or `yarn start`.
-      To create a production bundle, use `npm run build` or `yarn build`.
-    -->
     <header class="header">
 
-      <button class="button"><</button>
-      <button class="button">></button>
+      <button class="button_small">&#9654</button>
+      <button class="button_small">&#9664</button>
       <button class="buttonReg">СМЕНИТЬ ТАРИФ</button>
+      
       <button class="buttonEnter"> аккаунт &#9662</button>
       
       
@@ -56,28 +40,32 @@
       
     </aside>
     <main class="content">
+      <div class="list-group song-list">
+                    
+      </div>  
+      
       <h2 class="text-indent">Послушай эти шоу</h2>
       <div class="card">
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p>
         </a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         </a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         </a>
@@ -85,50 +73,50 @@
       <h2 class="text-indent">Что-то новенькое</h2>
       <div class="card">
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px">
+          <img src="./style.jpg" alt="house" width="145" height="145">
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px">
+          <img src="./style.jpg" alt="house" width="145" height="145">
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px">
+          <img src="./style.jpg" alt="house" width="145" height="145">
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px">
+          <img src="./style.jpg" alt="house" width="145" height="145">
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
          <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
       </div>
       <h2 class="text-indent">Выбор редакции(чарты)</h2>
       <div class="card">
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
 
@@ -136,11 +124,11 @@
       <h2 class="text-indent">В тренде</h2>
       <div class="card">
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
-          <img src="./style.jpg" alt="house" width="145px" height="145px"  >
+          <img src="./style.jpg" alt="house" width="145" height="145"  >
           <h4>Название</h4>
           <p>Описание</p></a>
         <a href="/" class="card_something">
@@ -170,16 +158,17 @@
     <footer class="footer">
       
       <ul class="panelmusik">
+        <audio id="player"></audio>
         <li class="panelmusik_elem">⇉</li>
-        <li class="panelmusik_elem">❚&#9664<p></li>
-        <li class="panelmusik_elem"><button class="play">❚❚</button></li>
-        <li class="panelmusik_elem">&#9654❚</p></li>
-        <li class="panelmusik_elem" >⭮</li>
+        <li class="panelmusik_elem"><button id="previous">❚&#9664</button></li>
+        <li class="panelmusik_elem"><button id="play">❚❚</button></li>
+        <li class="panelmusik_elem"><button id="next">&#9654❚</button></li>
+        <li class="panelmusik_elem">⭮</li>
       </ul>
 
     </footer>
 
 
 
-  </body>
+  </body> 
 </html>
