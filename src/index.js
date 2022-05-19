@@ -1,214 +1,175 @@
-/*
-Здравствуйте! У меня не получается самостоятельно разобраться с подключением к Spotify API,
-это похоже на шутку, из одного места все работает, но стоит поменять место вызова функции, то ломается подключение.
-С функцией вывода альбома нет проблем, а другая - написанная аналогично при одинаковых данных ломается,
- подскажите, пожалуйста, что не так? А то я совсем запуталась
-*/
-var playpause_btn = document.getElementById('play');
-var next_btn = document.getElementById('next');
-var previous_btn = document.getElementById('previous');
-var player = document.getElementById('player');
-var akk = document.getElementsByClassName('buttonEnter')[0];
-var akk = document.getElementsByClassName('buttonEnter')[0];
 const redirect_uri = "http://localhost:3000";
 const client_id = '0b4fbd03ced346d1be5b9cff118a543e';
 const client_secret = 'a5734ed330194687a90f6b75f10eae2a';
+const akk = document.getElementById('list-group');
+const header = document.getElementsByClassName('header')[0];
 
 let access_token = null;
 
-const AUTHORIZE = "https://accounts.spotify.com/authorize"
-const TOKEN = "https://accounts.spotify.com/api/token";
-
-//Авторизация
-function requestAuthorization(){
-    let url = AUTHORIZE;
-    url += "?client_id=" + client_id;
-    url += "&response_type=code";
-    url += "&redirect_uri=" + encodeURI(redirect_uri);
-    url += "&show_dialog=false";
-    url += "&scope=user-read-private user-read-email user-modify-playback-state user-read-playback-position user-library-read streaming user-read-playback-state user-read-recently-played playlist-read-private";
-    window.location.href = url;
-}
-
-function handleRedirect(){
-    let code = getCode();
-    window.history.pushState("", "", redirect_uri);
-    getToken(code);
-}
-
-function getCode(){
-    let code = null;
-    const queryString = window.location.search;
-    if ( queryString.length > 0 ){
-        const urlParams = new URLSearchParams(queryString);
-        code = urlParams.get('code')
-    }
-    return code;
-}
-
-function fetchAccessToken(code){
-    let body = "grant_type=authorization_code";
-    body += "&code=" + code; 
-    body += "&redirect_uri=" + encodeURI(redirect_uri);
-    body += "&client_id=" + client_id;
-    body += "&client_secret=" + client_secret;
-    getToken(body);
-}
-
-/*function callAuthorizationApi(body){
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", TOKEN, true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.setRequestHeader('Authorization', 'Basic ' + btoa(client_id + ":" + client_secret));
-    xhr.send(body);
-    xhr.onload = handleAuthorizationResponse;
-
-}*/
-//Получение токена, вызов функций
-const getToken = async (code) => {
+/**получает токен для дальнейших операций*/
+const getToken = async () => {
 
     const result = await fetch('https://accounts.spotify.com/api/token', {
         method: 'POST',
         headers: {
-            'Authorization' : 'Basic ' + btoa(client_id + ':' + client_secret),
-            'Content-Type' : 'application/x-www-form-urlencoded' 
+            'Content-Type' : 'application/x-www-form-urlencoded',
+            'Authorization' : 'Basic ' + btoa(client_id + ':' + client_secret)
         },
-        body: code
-    });
-    if ( result.status == 200 ){
-        var data = result.json();
-        console.log(data);
-        if ( data.access_token != undefined ){
-            access_token = data.access_token;
-            localStorage.setItem("access_token", access_token);
-        }        
-        const genres = getGenres(access_token);
-        genres.then(res => {console.log(res)});
-        const albums = getAlbum(access_token);
-        albums.then(res => {console.log(res)});
+        body: 'grant_type=client_credentials'
+    }).catch(err => alert(err));
+    const data = await result.json();
+    if (data.access_token == undefined) {
+        console.log("Ошибка получения токена");
     }
     else {
-        console.log(result.body);
-        alert(result.body);
+        access_token = data.access_token;
+        getGenres();
     }
 }
-/*
-function handleAuthorizationResponse(){
-    if ( this.status == 200 ){
-        var data = JSON.parse(this.responseText);
-        if ( data.access_token != undefined ){
-            access_token = data.access_token;
-            localStorage.setItem("access_token", access_token);
-        }
-    }
-    else {
-        console.log(this.responseText);
-        alert(this.responseText);
-    }
-}*/
 
-const getGenres = async (token) => {
-    const result = await fetch('https://api.spotify.com/v1/recommendations/available-genre-seeds', {
+/**получает список жанров*/
+const getGenres = async () => {
+    const result = await fetch('https://api.spotify.com/v1/browse/categories?locale=sv_RU&limit=30', {
         method: 'GET',
         headers: { 
             'Content-Type': 'application/json',
-            'Authorization' : 'Bearer ' + token
+            'Authorization' : 'Bearer ' + access_token
         }
     });
     const data = await result.json();
-    return data;
+    if (data.categories.items == undefined) {
+        console.log("Ошибка получения списка жанров");
+    }
+    else  createGenres(data.categories.items);
 }
 
-const getAlbum = async (token) => {
-    const result = await fetch('https://api.spotify.com/v1/albums/1lXY618HWkwYKJWBRYR4MK', {
-        method: 'GET',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization' : 'Bearer ' + token
-        }
-    });
-    const data = await result.json();
-    return data;
-}
-const getPlaylistByGenre = async (token, genreId) => {
+/**получает список плэйлистов по жанру*/
+const getPlaylistByGenre = async (genreId, target) => {
 
     const limit = 10;
     
     const result = await fetch(`https://api.spotify.com/v1/browse/categories/${genreId}/playlists?limit=${limit}`, {
         method: 'GET',
-        headers: { 'Authorization' : 'Bearer ' + token}
+        headers: { 'Authorization' : 'Bearer ' + access_token}
     });
-
     const data = await result.json();
-    return data.playlists.items;
+    if (data.playlists.items!= undefined) {
+        createPlaylistByGenre(data.playlists.items, target);
+    }
+    else console.log("Ошибка");
 }
 
-const getTracks = async (token, tracksEndPoint) => {
+/**получение треков в альбоме*/
+const getTracks = async (playlist_id) => {
 
-    const limit = 10;
-
-    const result = await fetch(`${tracksEndPoint}?limit=${limit}`, {
+    const result = await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
         method: 'GET',
-        headers: { 'Authorization' : 'Bearer ' + token}
+        headers: { 'Authorization' : 'Bearer ' + access_token}
     });
 
     const data = await result.json();
-    return data.items;
+    createPlaylist(data);
 }
 
-const getTrack = async (token, trackEndPoint) => {
+/**получение информации о треке*/
+const getTrack = async (track_id) => {
 
-    const result = await fetch(`${trackEndPoint}`, {
+    const result = await fetch(`https://api.spotify.com/v1/tracks/${track_id}`, {
         method: 'GET',
-        headers: { 'Authorization' : 'Bearer ' + token}
+        headers: { 'Authorization' : 'Bearer ' + access_token}
     });
-
     const data = await result.json();
-    return data;
+    createNewFooter(data);
 }
 
-
-akk.addEventListener("click", () => {
-    requestAuthorization()
-})
-
-var akks = document.getElementsByClassName('buttonReg')[0];
-akks.addEventListener("click", () => {
-    handleRedirect()
-    /*const genres = getGenres(access_token);
-    genres.then(res => {console.log(res)});
-    const albums = getAlbum(access_token);
-    albums.then(res => {console.log(res)});*/
-    //const playlist =getPlaylistByGenre(access_token)
-    //getToken();
-})
-
-/*function createGenre(text, value) {
-    const html = `<button class="card_something" value="${value}">${text}</button>`;
-    document.querySelector(document.getElementsByClassName('list-group')[0]).insertAdjacentHTML('beforeend', html);
+/**генерирует представление жанров на экран*/
+function createGenres(genres){
+    if (genres != undefined) {
+        var html = '';
+        genres.forEach(element => {
+            html += `<button class="genres" data="${element.id}" style="background-color: ${getRandomColor()};">${element.name}</button>`;
+            
+        });
+        akk.insertAdjacentHTML('beforeend', html);
+        const buttonArr = document.getElementsByClassName('genres');
+        for (let element of buttonArr) {
+            getPlaylistByGenre(element.getAttribute('data'), element);
+        }
+    }
+    else alert("Ошибка");
 }
 
-function createPlaylist(text, value) {
-    const html = `<p value="${value}">${text}</p>`;
-    document.querySelector(DOMElements.selectPlaylist).insertAdjacentHTML('beforeend', html);
+/**генерирует список плэйлистов по жанрам*/
+function createPlaylistByGenre(playlists, target){
+    if (playlists != undefined) {
+        let html2 = '<ul class="playlists">';
+        if (playlists.length > 0){
+            playlists.forEach(element => {
+                html2 += `<li class="playlist" data="${element.id}">${element.name}</li>`;
+            });
+        }
+        else html2 += '<p>К сожалению, плейлисты не найдены</p>';
+        target.insertAdjacentHTML('beforeend', html2+'</ul>');
+        const elem = target.getElementsByClassName('playlists')[0];
+        elem.addEventListener('click', ({target}) => {
+            if (target.tagName == 'LI'){
+                getTracks(target.getAttribute('data'));
+            }
+        });
+    }
+    else alert("Ошибка");
 }
 
-function createTrack(id, name) {
-    const html = `<a href="#" id="${id}">${name}</a>`;
-    document.querySelector(DOMElements.divSonglist).insertAdjacentHTML('beforeend', html);
+/**отображени информации о плейлисте*/
+function createPlaylist(data){
+    header.innerHTML = "<button class='button_small'>&#8617;</button>";
+    const back = header.getElementsByClassName('button_small')[0];
+    back.addEventListener('click', ({target}) => {
+        if (target.tagName == 'BUTTON'){
+            akk.innerHTML = "";
+            header.innerHTML = "";
+            getGenres();
+        }
+    });
+    let htmlCode = `<br /><img src="${data.images[0].url}"</img>`+
+    `<h1 id="namePlaylist">${data.name}</h1><br /><h2> ~ ${data.description}</h2><hr /><div class="searchTracks">`;
+    data.tracks.items.forEach((element => 
+        {
+            htmlCode += `<div class="track" data="${element.track.id}">&#9654 ${element.track.name}<p class="info">&#128712;</p></div>`
+        }
+        ));
+    akk.innerHTML = '<div class="descriptionPlaylist">'+ htmlCode +'</div></div>';
+    const elem = document.getElementsByClassName('searchTracks')[0];
+    elem.addEventListener('click', ({target}) => {
+        if (target.tagName == 'DIV'){
+            alert("Player command failed: Premium required");
+        }
+    });
+    elem.addEventListener('click', ({target}) => {
+        if (target.tagName == 'P'){
+            getTrack(target.parentNode.getAttribute('data'));
+        }
+    });
 }
 
+/**отображение информации о треке в футере */
+function createNewFooter(infoTrack){
+    const imgTrack = document.getElementsByClassName('trackName')[0]; 
+    const fragmentInfo = document.getElementsByClassName('trackInfo')[0];
+    fragmentInfo.innerHTML = `<h4>${infoTrack.name}</h4>${infoTrack.artists[0].name}<br>popularity: ${infoTrack.popularity}`;
+    imgTrack.innerHTML = `<img src="${infoTrack.album.images[0].url}" width="80" height="80"></img>`;
+};
 
-function createTrackDetail(img, title, artist) {
-    const detailDiv = document.querySelector(DOMElements.divSonglist);
-    detailDiv.innerHTML = '';
-    const html = 
-    `<a href="/" class="card_something">
-        <img src="${img}" width="145" height="145">
-        <h4>${title}</h4>
-        <p>${artist}</p>
-    </a>`;
+/**генерация цвета для контейнеров жанров*/
+function getRandomColor() {
+    var letters = "0123456789ABCDEF";
+    var randomColor = "#";
+    for (var i = 0; i < 6; i++) {
+      randomColor += letters[Math.floor(Math.random() * letters.length)];
+    }
+    return randomColor;
+  }
 
-    detailDiv.insertAdjacentHTML('beforeend', html)
-}
-*/
+ getToken();
+
+
