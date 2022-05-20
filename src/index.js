@@ -120,15 +120,17 @@ function createPlaylist(data){
     `<h1 id="namePlaylist">${data.name}</h1><br /><h2> ~ ${data.description}</h2><hr /><div class="searchTracks">`;
     data.tracks.items.forEach((element => 
         {
-            htmlCode += `<div class="track" data="${element.track.id}">&#9654 ${element.track.name}<p class="info">&#128712;</p></div>`
+            htmlCode += `<div class="track" data="${element.track.id}">&#9654 ${element.track.name}<p class="info">&#128712;</p></div>`;
         }
         ));
     akk.innerHTML = '<div class="descriptionPlaylist">'+ htmlCode +'</div></div>';
     const elem = document.getElementsByClassName('searchTracks')[0];
     elem.addEventListener('click', ({target}) => {
         if (target.tagName == 'DIV'){
-            header.innerHTML = "<button class='button_small'>&#8617;</button>";
-            header.insertAdjacentHTML("beforeend",'<p id="mistake">! Player command failed: Premium required !</p>');
+            if (!header.innerHTML.includes("mistake"))
+            {
+                header.insertAdjacentHTML("beforeend",'<p id="mistake">! Player command failed: Premium required !</p>');
+            }
         }
     });
     elem.addEventListener('click', ({target}) => {
