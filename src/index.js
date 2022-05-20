@@ -1,10 +1,22 @@
 const redirect_uri = "http://localhost:3000";
 const client_id = '0b4fbd03ced346d1be5b9cff118a543e';
 const client_secret = 'a5734ed330194687a90f6b75f10eae2a';
+const address_genres = 'https://api.spotify.com/v1/browse/categories?locale=sv_RU&limit=30';
 const akk = document.getElementById('list-group');
 const header = document.getElementsByClassName('header')[0];
 
 let access_token = null;
+
+const searchData = async (url) => {
+    const result = await fetch(url, {
+        method: 'GET',
+        headers: { 
+            'Content-Type': 'application/json',
+            'Authorization' : 'Bearer ' + access_token
+        }
+    });
+    return result.json();
+}
 
 /**получает токен для дальнейших операций*/
 const getToken = async () => {
@@ -29,30 +41,13 @@ const getToken = async () => {
 
 /**получает список жанров*/
 const getGenres = async () => {
-    const result = await fetch('https://api.spotify.com/v1/browse/categories?locale=sv_RU&limit=30', {
-        method: 'GET',
-        headers: { 
-            'Content-Type': 'application/json',
-            'Authorization' : 'Bearer ' + access_token
-        }
-    });
-    const data = await result.json();
-    if (data.categories.items == undefined) {
-        console.log("Ошибка получения списка жанров");
-    }
-    else  createGenres(data.categories.items);
+    const data = await searchData(address_genres);
+    createGenres(data);
 }
 
 /**получает список плэйлистов по жанру*/
 const getPlaylistByGenre = async (genreId, target) => {
-
-    const limit = 10;
-    
-    const result = await fetch(`https://api.spotify.com/v1/browse/categories/${genreId}/playlists?limit=${limit}`, {
-        method: 'GET',
-        headers: { 'Authorization' : 'Bearer ' + access_token}
-    });
-    const data = await result.json();
+    const data = await searchData(`https://api.spotify.com/v1/browse/categories/${genreId}/playlists?limit=10`);
     if (data.playlists.items!= undefined) {
         createPlaylistByGenre(data.playlists.items, target);
     }
@@ -61,32 +56,22 @@ const getPlaylistByGenre = async (genreId, target) => {
 
 /**получение треков в альбоме*/
 const getTracks = async (playlist_id) => {
-
-    const result = await fetch(`https://api.spotify.com/v1/playlists/${playlist_id}`, {
-        method: 'GET',
-        headers: { 'Authorization' : 'Bearer ' + access_token}
-    });
-
-    const data = await result.json();
+    const data = await searchData(`https://api.spotify.com/v1/playlists/${playlist_id}`);
     createPlaylist(data);
 }
 
 /**получение информации о треке*/
 const getTrack = async (track_id) => {
-
-    const result = await fetch(`https://api.spotify.com/v1/tracks/${track_id}`, {
-        method: 'GET',
-        headers: { 'Authorization' : 'Bearer ' + access_token}
-    });
-    const data = await result.json();
+    const data  = await searchData(`https://api.spotify.com/v1/tracks/${track_id}`);
     createNewFooter(data);
 }
 
 /**генерирует представление жанров на экран*/
 function createGenres(genres){
-    if (genres != undefined) {
+    
+    if (genres.categories.items != undefined) {
         var html = '';
-        genres.forEach(element => {
+        genres.categories.items.forEach(element => {
             html += `<button class="genres" data="${element.id}" style="background-color: ${getRandomColor()};">${element.name}</button>`;
             
         });
@@ -96,7 +81,7 @@ function createGenres(genres){
             getPlaylistByGenre(element.getAttribute('data'), element);
         }
     }
-    else alert("Ошибка");
+    else console.log("Ошибка получения списка жанров");
 }
 
 /**генерирует список плэйлистов по жанрам*/
@@ -117,7 +102,7 @@ function createPlaylistByGenre(playlists, target){
             }
         });
     }
-    else alert("Ошибка");
+    else console.log("Ошибка");
 }
 
 /**отображени информации о плейлисте*/
@@ -142,7 +127,8 @@ function createPlaylist(data){
     const elem = document.getElementsByClassName('searchTracks')[0];
     elem.addEventListener('click', ({target}) => {
         if (target.tagName == 'DIV'){
-            alert("Player command failed: Premium required");
+            header.innerHTML = "<button class='button_small'>&#8617;</button>";
+            header.insertAdjacentHTML("beforeend",'<p id="mistake">! Player command failed: Premium required !</p>');
         }
     });
     elem.addEventListener('click', ({target}) => {
