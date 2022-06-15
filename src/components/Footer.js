@@ -1,24 +1,24 @@
-import { useEffect, useState } from 'react'
+
 import Api from '../utils'
+import useLoginStatus from './useLoginStatus'
 
 export default function Footer(props) {
-    const[track, setTrack] = useState(null)
-    useEffect(()=>{
-        if (props.infoTrack != null)
-        Api.getTrack(props.infoTrack).then((track)=> setTrack(track))
-    }, [props.infoTrack]) 
+    const { data, isLoading, error } = useLoginStatus(props.infoTrack,  Api.getTrack);
+
+    if (error) return <footer className = "footer">Ошибка! Найти песню не удалось</footer>
+    if (isLoading) return <footer className = "footer">Loading....</footer>
     return (
         <footer className = "footer">
             {
-                track ? 
+                data ? 
                 <>
                     <div className = "trackName">
-                        <img src={track.album.images[0].url} width="80" height="80" />
+                        <img alt ="cover of the song" src={data.album.images[0].url} width="80" height="80" />
                     </div>
                     <div className = "trackInfo">
-                        <h4>{track.name}</h4>{track.artists[0].name}
+                        <h4>{data.name}</h4>{data.artists[0].name}
                         <br />
-                        popularity: {track.popularity}
+                        popularity: {data.popularity}
                     </div>                    
                 </> : null
             }

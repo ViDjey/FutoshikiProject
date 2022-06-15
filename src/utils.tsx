@@ -4,40 +4,52 @@ class Api {
     private static access_token: string = "";
 
     private static searchData = async (url: string) => {
-        const result = await fetch(url, {
-            method: 'GET',
-            headers: { 
-                'Content-Type': 'application/json',
-                'Authorization' : 'Bearer ' + Api.access_token
+        try{
+            const result = await fetch(url, {
+                method: 'GET',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization' : 'Bearer ' + Api.access_token
+                }
+            });
+            if (result.ok) { 
+                return result.json();
+            } else {
+                return null;
             }
-        });
-        if (result.ok) { 
-            return await result.json();
-        } else {
+        } catch (error) {
+            console.error('Ошибка:', error);
             return null;
         }
        
     }
     /**получает токен для дальнейших операций*/
     static getToken = async () => {
-        const result = await fetch('https://accounts.spotify.com/api/token', {
-            method: 'POST',
-            headers: {
-                'Content-Type' : 'application/x-www-form-urlencoded',
-                'Authorization' : 'Basic ' + btoa(Api.client_id + ':' + Api.client_secret)
-            },
-            body: 'grant_type=client_credentials'
-        });
-        const data = await result.json();
-        Api.access_token = await data.access_token;
-        return data.access_token;
+        try{
+            const result = await fetch('https://accounts.spotify.com/api/token', {
+                method: 'POST',
+                headers: {
+                    'Content-Type' : 'application/x-www-form-urlencoded',
+                    'Authorization' : 'Basic ' + btoa(Api.client_id + ':' + Api.client_secret)
+                },
+                body: 'grant_type=client_credentials'
+            });
+            const data = await result.json();
+            Api.access_token = await data.access_token;
+        } catch (error) {
+            console.error('Ошибка:', error);
+        }
     }
 
     /**получает список жанров*/
     static getGenres = async () => {
         await Api.getToken();
-        const data = await Api.searchData('https://api.spotify.com/v1/browse/categories?locale=sv_RU&limit=30');
-        return data.categories.items;
+        if (Api.access_token == null) return null;
+        else {
+            const data = await Api.searchData('https://api.spotify.com/v1/browse/categories?locale=sv_RU&limit=30');
+            if (data != null) return data.categories.items;
+            else return null;
+        }
     }
 
     /**получает список плэйлистов по жанру*/

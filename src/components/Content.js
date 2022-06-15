@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
+import useLoginStatus from './useLoginStatus'
 import Api from '../utils'
 import CreateGenres from "./CreateGenres";
 import CreatePlaylist from "./CreatePlaylist"
 
-export default function Content(props) {
-    const[genres, setGenres] = useState([])
+export default function Content({ updateMistake, updateBack, updateInfo }) {
+ 
     const[playlistId, setPlaylistId] = useState(null)
+    const { data, isLoading, error } = useLoginStatus("genres",  Api.getGenres)
+
     useEffect(()=>{
-            Api.getGenres().then((gnrs=>setGenres(gnrs)))
-    }, []) 
-    useEffect(()=>{
-        if (playlistId != null) props.updateBack(true)
-    }, [playlistId])
+        if (playlistId != null) updateBack(true)
+    }, [updateBack, playlistId])
     
     /**генерация цвета для контейнеров жанров*/
     function getRandomColor() {
@@ -22,13 +22,16 @@ export default function Content(props) {
         }
         return randomColor
     }
+
+    if (error) return <main className="content">Ошибка! Найти жанры не удалось</main>
+    if (isLoading) return <main className="content">Loading....</main>
     if (playlistId == null){
         return (
             <main className="content">
                 <h2 className="text-indent">Жанры</h2>
                 <div id="list-group"> 
-                {
-                    genres.map((genre) => (
+                { data ? 
+                    data.map((genre) => (
                         <button className="genres" 
                             key={genre.id}  
                             style={{backgroundColor: getRandomColor()}}
@@ -38,6 +41,7 @@ export default function Content(props) {
                         </button> 
                         
                     ))
+                    : <>Ошибка! Найти жанры не удалось</>
                 }
                 </div>  
             </main>
@@ -46,7 +50,7 @@ export default function Content(props) {
     else {
         return (
             <main className="content">
-                <CreatePlaylist playlistId = {playlistId} updateMistake = {props.updateMistake} updateInfo = {props.updateInfo}/>
+                <CreatePlaylist playlistId = {playlistId} updateMistake = {updateMistake} updateInfo = {updateInfo}/>
             </main>
         )
     }

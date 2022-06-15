@@ -1,15 +1,16 @@
-import { useEffect, useState } from 'react'
+
 import Api from '../utils'
+import useLoginStatus from './useLoginStatus'
 
 export default function CreateGenres(props){
-    const[playlists, setPlaylists] = useState(null)
-    useEffect(()=>{
-        if (props.genreId != null)
-        Api.getPlaylistByGenre(props.genreId).then((playLists)=>setPlaylists(playLists))
-    }, []) 
-        if (playlists != null ){
+    const { data, isLoading, error } = useLoginStatus(props.genreId,  Api.getPlaylistByGenre);
+
+    if (isLoading){return <ul className="playlists"><li>Loading....</li></ul>}
+    if (error){return <ul className="playlists"><li>К сожалению, плейлисты не найдены</li></ul>}
+    else {
+        if (data != null ){
             return <ul className="playlists">
-                {playlists.map(element => { 
+                {data.map(element => { 
                     return element ? 
                      (<li className = "playlist" 
                     key={element.id}
@@ -17,5 +18,7 @@ export default function CreateGenres(props){
                     > {element.name} </li>) : null
                  })}
             </ul>}
-        else return (<ul className="playlists"><li>К сожалению, плейлисты не найдены</li></ul>)
+        else 
+         return (<ul className="playlists"><li>К сожалению, плейлисты не найдены</li></ul>)
+        }
 }
