@@ -1,23 +1,23 @@
 import React from 'react';
+import { useState } from 'react'
+import Headers from "./components/Headers";
+import Accordion from "./components/Accordion";
+import Content from "./components/Content";
+import Footer from "./components/Footer";
+import './styles.css';
 
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <p>
-//           Edit <code>src/App.tsx</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
+function App() {
+    const[mistake, sethasMistake] = useState(false)
+    const[back, sethasButtonBack] = useState(false)
+    const[infoTrack, setUpdateInfo] = useState(null)
+    return (
+        <div className = 'start'> 
+            <Headers hasMistake = {mistake} hasButtonBack = {back} />
+            <Accordion />
+            <Content updateMistake = {sethasMistake} updateBack = {sethasButtonBack} updateInfo = {setUpdateInfo} />
+            <Footer infoTrack = {infoTrack}/>
+        </div>
+    )
+ }
 
-// export default App;
+ export default App;
