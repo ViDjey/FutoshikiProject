@@ -1,21 +1,38 @@
-import React from 'react';
+import Content from "./components/Content";
 import { useState } from 'react'
 import Headers from "./components/Headers";
-import Accordion from "./components/Accordion";
-import Content from "./components/Content";
-import Footer from "./components/Footer";
+
 import './styles.css';
 
 function App() {
-    const[mistake, sethasMistake] = useState(false)
-    const[back, sethasButtonBack] = useState(false)
-    const[infoTrack, setUpdateInfo] = useState(null)
+    const[sizeGenerateFutoshiki, setSizeGenerateFutoshiki] = useState(0);
+    const[levelComplexity, setLevelComplexity] = useState(-1);
+    const[solveFutoshiki, setSolveFutoshiki] = useState(false);
+    const[repeateFutoshiki, setRepeateFutoshiki] = useState(false);
+    const [countHearts, setCountHearts] = useState([3]);
     return (
         <div className = 'start'> 
-            <Headers hasMistake = {mistake} hasButtonBack = {back} />
-            <Accordion />
-            <Content updateMistake = {sethasMistake} updateBack = {sethasButtonBack} updateInfo = {setUpdateInfo} />
-            <Footer infoTrack = {infoTrack}/>
+
+            <div className='futoshiki_grid futoshiki_title'> Футошики</div>
+            <Headers 
+                setSizeGenerateFutoshiki = {setSizeGenerateFutoshiki}
+                sizeGenerateFutoshiki = { sizeGenerateFutoshiki }
+                setSolveFutoshiki = { setSolveFutoshiki }
+                setRepeateFutoshiki = { setRepeateFutoshiki }
+                countHearts = { countHearts }
+                levelComplexity = { levelComplexity }
+                setLevelComplexity = { setLevelComplexity }
+            />
+            <Content 
+                sizeGenerateFutoshiki = {sizeGenerateFutoshiki}
+                solveFutoshiki = { solveFutoshiki }
+                setCountHearts = { setCountHearts }
+                repeateFutoshiki = { repeateFutoshiki }
+                countHearts = { countHearts }
+                setSizeGenerateFutoshiki = {setSizeGenerateFutoshiki}
+                levelComplexity = { levelComplexity }
+                setLevelComplexity = { setLevelComplexity }
+            />
         </div>
     )
  }
